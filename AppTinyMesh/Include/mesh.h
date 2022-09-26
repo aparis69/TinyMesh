@@ -1,8 +1,10 @@
 #pragma once
 
 #include "box.h"
+#include "sphere.h"
 #include "ray.h"
 #include "mathematics.h"
+#include "matrix.h"
 
 // Triangle
 class Triangle
@@ -85,44 +87,40 @@ class Mesh
 protected:
   std::vector<Vector> vertices; //!< Vertices.
   std::vector<Vector> normals;  //!< Normals.
-  std::vector<int> varray;     //!< Vertex indexes.
-  std::vector<int> narray;     //!< Normal indexes.
+  std::vector<int> varray;		//!< Vertex indexes.
+  std::vector<int> narray;		//!< Normal indexes.
+
 public:
   explicit Mesh();
   explicit Mesh(const std::vector<Vector>&, const std::vector<int>&);
   explicit Mesh(const std::vector<Vector>&, const std::vector<Vector>&, const std::vector<int>&, const std::vector<int>&);
+  explicit Mesh(const Box&);
+  explicit Mesh(const Sphere&, int n);
   ~Mesh();
 
   void Reserve(int, int, int, int);
-
   Triangle GetTriangle(int) const;
   Vector Vertex(int) const;
   Vector Vertex(int, int) const;
-
   Vector Normal(int) const;
-
   int Triangles() const;
   int Vertexes() const;
 
   std::vector<int> VertexIndexes() const;
   std::vector<int> NormalIndexes() const;
-
   int VertexIndex(int, int) const;
   int NormalIndex(int, int) const;
-
   Vector operator[](int) const;
-
   Box GetBox() const;
-
   void Scale(double);
-
   void SmoothNormals();
-
-  // Constructors from core classes
-  explicit Mesh(const Box&);
 
   void Load(const QString&);
   void SaveObj(const QString&, const QString&) const;
+
+  void Rotate(const Matrix3& m);
+  void Scale(const Matrix3& m);
+
 protected:
   void AddTriangle(int, int, int, int);
   void AddSmoothTriangle(int, int, int, int, int, int);

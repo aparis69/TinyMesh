@@ -107,6 +107,7 @@
     <ClCompile Include="Source\evector.cpp" />
     <ClCompile Include="Source\implicits.cpp" />
     <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\matrix.cpp" />
     <ClCompile Include="Source\mesh-widget.cpp" />
     <ClCompile Include="Source\mesh.cpp" />
     <ClCompile Include="Source\meshcolor.cpp" />
@@ -161,10 +162,12 @@
     <ClInclude Include="Include\color.h" />
     <ClInclude Include="Include\implicits.h" />
     <ClInclude Include="Include\mathematics.h" />
+    <ClInclude Include="Include\matrix.h" />
     <ClInclude Include="Include\mesh.h" />
     <ClInclude Include="Include\meshcolor.h" />
     <ClInclude Include="Include\ray.h" />
     <ClInclude Include="Include\shader-api.h" />
+    <ClInclude Include="Include\sphere.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\mesh.glsl" />

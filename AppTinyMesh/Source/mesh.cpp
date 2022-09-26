@@ -25,7 +25,7 @@ Indices must have a size multiple of three (three for triangle vertices and thre
 */
 Mesh::Mesh(const std::vector<Vector>& vertices, const std::vector<int>& indices) :vertices(vertices), varray(indices)
 {
-  normals.resize(vertices.size(), Vector::Z);
+	normals.resize(vertices.size(), Vector::Z);
 }
 
 /*!
@@ -45,10 +45,10 @@ Mesh::Mesh(const std::vector<Vector>& vertices, const std::vector<Vector>& norma
 */
 void Mesh::Reserve(int nv, int nn, int nvi, int nvn)
 {
-  vertices.reserve(nv);
-  normals.reserve(nn);
-  varray.reserve(nvi);
-  narray.reserve(nvn);
+	vertices.reserve(nv);
+	normals.reserve(nn);
+	varray.reserve(nvi);
+	narray.reserve(nvn);
 }
 
 /*!
@@ -66,25 +66,25 @@ This function weights the normals of the faces by their corresponding area.
 */
 void Mesh::SmoothNormals()
 {
-  // Initialize 
-  normals.resize(vertices.size(), Vector::Null);
+	// Initialize 
+	normals.resize(vertices.size(), Vector::Null);
 
-  narray = varray;
+	narray = varray;
 
-  // Accumulate normals
-  for (int i = 0; i < varray.size(); i += 3)
-  {
-    Vector tn = Triangle(vertices[varray.at(i)], vertices[varray.at(i + 1)], vertices[varray.at(i + 2)]).AreaNormal();
-    normals[narray[i + 0]] += tn;
-    normals[narray[i + 1]] += tn;
-    normals[narray[i + 2]] += tn;
-  }
+	// Accumulate normals
+	for (int i = 0; i < varray.size(); i += 3)
+	{
+		Vector tn = Triangle(vertices[varray.at(i)], vertices[varray.at(i + 1)], vertices[varray.at(i + 2)]).AreaNormal();
+		normals[narray[i + 0]] += tn;
+		normals[narray[i + 1]] += tn;
+		normals[narray[i + 2]] += tn;
+	}
 
-  // Normalize 
-  for (int i = 0; i < normals.size(); i++)
-  {
-    Normalize(normals[i]);
-  }
+	// Normalize 
+	for (int i = 0; i < normals.size(); i++)
+	{
+		Normalize(normals[i]);
+	}
 }
 
 /*!
@@ -94,12 +94,12 @@ void Mesh::SmoothNormals()
 */
 void Mesh::AddSmoothTriangle(int a, int na, int b, int nb, int c, int nc)
 {
-  varray.push_back(a);
-  narray.push_back(na);
-  varray.push_back(b);
-  narray.push_back(nb);
-  varray.push_back(c);
-  narray.push_back(nc);
+	varray.push_back(a);
+	narray.push_back(na);
+	varray.push_back(b);
+	narray.push_back(nb);
+	varray.push_back(c);
+	narray.push_back(nc);
 }
 
 /*!
@@ -109,12 +109,12 @@ void Mesh::AddSmoothTriangle(int a, int na, int b, int nb, int c, int nc)
 */
 void Mesh::AddTriangle(int a, int b, int c, int n)
 {
-  varray.push_back(a);
-  narray.push_back(n);
-  varray.push_back(b);
-  narray.push_back(n);
-  varray.push_back(c);
-  narray.push_back(n);
+	varray.push_back(a);
+	narray.push_back(n);
+	varray.push_back(b);
+	narray.push_back(n);
+	varray.push_back(c);
+	narray.push_back(n);
 }
 
 /*!
@@ -127,11 +127,11 @@ Creates two smooth triangles abc and acd.
 */
 void Mesh::AddSmoothQuadrangle(int a, int na, int b, int nb, int c, int nc, int d, int nd)
 {
-  // First triangle
-  AddSmoothTriangle(a, na, b, nb, c, nc);
+	// First triangle
+	AddSmoothTriangle(a, na, b, nb, c, nc);
 
-  // Second triangle
-  AddSmoothTriangle(a, na, c, nc, d, nd);
+	// Second triangle
+	AddSmoothTriangle(a, na, c, nc, d, nd);
 }
 
 /*!
@@ -141,7 +141,7 @@ void Mesh::AddSmoothQuadrangle(int a, int na, int b, int nb, int c, int nc, int 
 */
 void Mesh::AddQuadrangle(int a, int b, int c, int d)
 {
-  AddSmoothQuadrangle(a, a, b, b, c, c, d, d);
+	AddSmoothQuadrangle(a, a, b, b, c, c, d, d);
 }
 
 /*!
@@ -149,11 +149,11 @@ void Mesh::AddQuadrangle(int a, int b, int c, int d)
 */
 Box Mesh::GetBox() const
 {
-  if (vertices.size() == 0)
-  {
-    return Box::Null;
-  }
-  return Box(vertices);
+	if (vertices.size() == 0)
+	{
+		return Box::Null;
+	}
+	return Box(vertices);
 }
 
 /*!
@@ -164,43 +164,90 @@ The object has 8 vertices, 6 normals and 12 triangles.
 */
 Mesh::Mesh(const Box& box)
 {
-  // Vertices
-  vertices.resize(8);
+	// Vertices
+	vertices.resize(8);
 
-  for (int i = 0; i < 8; i++)
-  {
-    vertices[i] = box.Vertex(i);
-  }
+	for (int i = 0; i < 8; i++)
+	{
+		vertices[i] = box.Vertex(i);
+	}
 
-  // Normals
-  normals.push_back(Vector(-1, 0, 0));
-  normals.push_back(Vector(1, 0, 0));
-  normals.push_back(Vector(0, -1, 0));
-  normals.push_back(Vector(0, 1, 0));
-  normals.push_back(Vector(0, 0, -1));
-  normals.push_back(Vector(0, 0, 1));
+	// Normals
+	normals.push_back(Vector(-1, 0, 0));
+	normals.push_back(Vector(1, 0, 0));
+	normals.push_back(Vector(0, -1, 0));
+	normals.push_back(Vector(0, 1, 0));
+	normals.push_back(Vector(0, 0, -1));
+	normals.push_back(Vector(0, 0, 1));
 
-  // Reserve space for the triangle array
-  varray.reserve(12 * 3);
-  narray.reserve(12 * 3);
+	// Reserve space for the triangle array
+	varray.reserve(12 * 3);
+	narray.reserve(12 * 3);
 
-  AddTriangle(0, 2, 1, 4);
-  AddTriangle(1, 2, 3, 4);
+	AddTriangle(0, 2, 1, 4);
+	AddTriangle(1, 2, 3, 4);
 
-  AddTriangle(4, 5, 6, 5);
-  AddTriangle(5, 7, 6, 5);
+	AddTriangle(4, 5, 6, 5);
+	AddTriangle(5, 7, 6, 5);
 
-  AddTriangle(0, 4, 2, 0);
-  AddTriangle(4, 6, 2, 0);
+	AddTriangle(0, 4, 2, 0);
+	AddTriangle(4, 6, 2, 0);
 
-  AddTriangle(1, 3, 5, 1);
-  AddTriangle(3, 7, 5, 1);
+	AddTriangle(1, 3, 5, 1);
+	AddTriangle(3, 7, 5, 1);
 
-  AddTriangle(0, 1, 5, 2);
-  AddTriangle(0, 5, 4, 2);
+	AddTriangle(0, 1, 5, 2);
+	AddTriangle(0, 5, 4, 2);
 
-  AddTriangle(3, 2, 7, 3);
-  AddTriangle(6, 7, 2, 3);
+	AddTriangle(3, 2, 7, 3);
+	AddTriangle(6, 7, 2, 3);
+}
+
+/*!
+\brief
+*/
+Mesh::Mesh(const Sphere& sphere, int n)
+{
+	const Vector c = sphere.Center();
+	const double r = sphere.Radius();
+	const int stackCount = n;
+	const int sectorCount = 2 * n;
+
+	const double sectorStep = 2.0 * Math::Pi / sectorCount;
+	const double stackStep = Math::Pi / stackCount;
+
+	for (int i = 0; i <= stackCount; i++)
+	{
+		double stackAngle = Math::Pi / 2 - i * stackStep;		// starting from pi/2 to -pi/2
+		for (int j = 0; j <= sectorCount; ++j)
+		{
+			double sectorAngle = j * sectorStep;				// starting from 0 to 2pi
+
+			double x = r * cos(stackAngle) * cos(sectorAngle);	// r * cos(u) * cos(v)
+			double y = r * cos(stackAngle) * sin(sectorAngle);	// r * cos(u) * sin(v)
+			double z = r * sin(stackAngle);						// r * sin(u)
+			vertices.push_back(Vector(x, y, z));
+
+			normals.push_back(Normalized(vertices.back() - c));
+		}
+	}
+
+	for (int i = 0; i < stackCount; i++)
+	{
+		int k1 = i * (sectorCount + 1);     // beginning of current stack
+		int k2 = k1 + sectorCount + 1;      // beginning of next stack
+		for (int j = 0; j < sectorCount; j++, k1++, k2++)
+		{
+			// 2 triangles per sector excluding first and last stacks
+			// k1 => k2 => k1+1
+			if (i != 0)
+				AddSmoothTriangle(k1, k1, k2, k2, k1 + 1, k1 + 1);
+
+			// k1+1 => k2 => k2+1
+			if (i != (stackCount - 1))
+				AddSmoothTriangle(k1 + 1, k1 + 1, k2, k2, k2 + 1, k2 + 1);
+		}
+	}
 }
 
 /*!
@@ -209,20 +256,20 @@ Mesh::Mesh(const Box& box)
 */
 void Mesh::Scale(double s)
 {
-    // Vertexes
-    for (int i = 0; i < vertices.size(); i++)
-    {
-        vertices[i] *= s;
-    }
+	// Vertexes
+	for (int i = 0; i < vertices.size(); i++)
+	{
+		vertices[i] *= s;
+	}
 
-    if (s < 0.0)
-    {
-        // Normals
-        for (int i = 0; i < normals.size(); i++)
-        {
-            normals[i] = -normals[i];
-        }
-    }
+	if (s < 0.0)
+	{
+		// Normals
+		for (int i = 0; i < normals.size(); i++)
+		{
+			normals[i] = -normals[i];
+		}
+	}
 }
 
 
@@ -238,46 +285,46 @@ void Mesh::Scale(double s)
 */
 void Mesh::Load(const QString& filename)
 {
-  vertices.clear();
-  normals.clear();
-  varray.clear();
-  narray.clear();
+	vertices.clear();
+	normals.clear();
+	varray.clear();
+	narray.clear();
 
-  QFile data(filename);
+	QFile data(filename);
 
-  if (!data.open(QFile::ReadOnly))
-    return;
-  QTextStream in(&data);
+	if (!data.open(QFile::ReadOnly))
+		return;
+	QTextStream in(&data);
 
-  // Set of regular expressions : Vertex, Normal, Triangle
-  QRegularExpression rexv("v\\s*([-|+|\\s]\\d*\\.\\d+)\\s*([-|+|\\s]\\d*\\.\\d+)\\s*([-|+|\\s]\\d*\\.\\d+)");
-  QRegularExpression rexn("vn\\s*([-|+|\\s]\\d*\\.\\d+)\\s*([-|+|\\s]\\d*\\.\\d+)\\s*([-|+|\\s]\\d*\\.\\d+)");
-  QRegularExpression rext("f\\s*(\\d*)/\\d*/(\\d*)\\s*(\\d*)/\\d*/(\\d*)\\s*(\\d*)/\\d*/(\\d*)");
-  while (!in.atEnd())
-  {
-    QString line = in.readLine();
-    QRegularExpressionMatch match = rexv.match(line);
-    QRegularExpressionMatch matchN = rexn.match(line);
-    QRegularExpressionMatch matchT = rext.match(line);
-    if (match.hasMatch())//rexv.indexIn(line, 0) > -1)
-    {
-      Vector q = Vector(match.captured(1).toDouble(), match.captured(2).toDouble(), match.captured(3).toDouble()); vertices.push_back(q);
-    }
-    else if (matchN.hasMatch())//rexn.indexIn(line, 0) > -1)
-    {
-      Vector q = Vector(matchN.captured(1).toDouble(), matchN.captured(2).toDouble(), matchN.captured(3).toDouble());  normals.push_back(q);
-    }
-    else if (matchT.hasMatch())//rext.indexIn(line, 0) > -1)
-    {
-      varray.push_back(matchT.captured(1).toInt() - 1);
-      varray.push_back(matchT.captured(3).toInt() - 1);
-      varray.push_back(matchT.captured(5).toInt() - 1);
-      narray.push_back(matchT.captured(2).toInt() - 1);
-      narray.push_back(matchT.captured(4).toInt() - 1);
-      narray.push_back(matchT.captured(6).toInt() - 1);
-    }
-  }
-  data.close();
+	// Set of regular expressions : Vertex, Normal, Triangle
+	QRegularExpression rexv("v\\s*([-|+|\\s]\\d*\\.\\d+)\\s*([-|+|\\s]\\d*\\.\\d+)\\s*([-|+|\\s]\\d*\\.\\d+)");
+	QRegularExpression rexn("vn\\s*([-|+|\\s]\\d*\\.\\d+)\\s*([-|+|\\s]\\d*\\.\\d+)\\s*([-|+|\\s]\\d*\\.\\d+)");
+	QRegularExpression rext("f\\s*(\\d*)/\\d*/(\\d*)\\s*(\\d*)/\\d*/(\\d*)\\s*(\\d*)/\\d*/(\\d*)");
+	while (!in.atEnd())
+	{
+		QString line = in.readLine();
+		QRegularExpressionMatch match = rexv.match(line);
+		QRegularExpressionMatch matchN = rexn.match(line);
+		QRegularExpressionMatch matchT = rext.match(line);
+		if (match.hasMatch())//rexv.indexIn(line, 0) > -1)
+		{
+			Vector q = Vector(match.captured(1).toDouble(), match.captured(2).toDouble(), match.captured(3).toDouble()); vertices.push_back(q);
+		}
+		else if (matchN.hasMatch())//rexn.indexIn(line, 0) > -1)
+		{
+			Vector q = Vector(matchN.captured(1).toDouble(), matchN.captured(2).toDouble(), matchN.captured(3).toDouble());  normals.push_back(q);
+		}
+		else if (matchT.hasMatch())//rext.indexIn(line, 0) > -1)
+		{
+			varray.push_back(matchT.captured(1).toInt() - 1);
+			varray.push_back(matchT.captured(3).toInt() - 1);
+			varray.push_back(matchT.captured(5).toInt() - 1);
+			narray.push_back(matchT.captured(2).toInt() - 1);
+			narray.push_back(matchT.captured(4).toInt() - 1);
+			narray.push_back(matchT.captured(6).toInt() - 1);
+		}
+	}
+	data.close();
 }
 
 /*!
@@ -287,23 +334,37 @@ void Mesh::Load(const QString& filename)
 */
 void Mesh::SaveObj(const QString& url, const QString& meshName) const
 {
-  QFile data(url);
-  if (!data.open(QFile::WriteOnly))
-    return;
-  QTextStream out(&data);
-  out << "g " << meshName << Qt::endl;
-  for (int i = 0; i < vertices.size(); i++)
-    out << "v " << vertices.at(i)[0] << " " << vertices.at(i)[1] << " " << vertices.at(i)[2] << QString('\n');
-  for (int i = 0; i < normals.size(); i++)
-    out << "vn " << normals.at(i)[0] << " " << normals.at(i)[1] << " " << normals.at(i)[2] << QString('\n');
-  for (int i = 0; i < varray.size(); i += 3)
-  {
-    out << "f " << varray.at(i) + 1 << "//" << narray.at(i) + 1 << " "
-      << varray.at(i + 1) + 1 << "//" << narray.at(i + 1) + 1 << " "
-      << varray.at(i + 2) + 1 << "//" << narray.at(i + 2) + 1 << " "
-      << "\n";
-  }
-  out.flush();
-  data.close();
+	QFile data(url);
+	if (!data.open(QFile::WriteOnly))
+		return;
+	QTextStream out(&data);
+	out << "g " << meshName << Qt::endl;
+	for (int i = 0; i < vertices.size(); i++)
+		out << "v " << vertices.at(i)[0] << " " << vertices.at(i)[1] << " " << vertices.at(i)[2] << QString('\n');
+	for (int i = 0; i < normals.size(); i++)
+		out << "vn " << normals.at(i)[0] << " " << normals.at(i)[1] << " " << normals.at(i)[2] << QString('\n');
+	for (int i = 0; i < varray.size(); i += 3)
+	{
+		out << "f " << varray.at(i) + 1 << "//" << narray.at(i) + 1 << " "
+			<< varray.at(i + 1) + 1 << "//" << narray.at(i + 1) + 1 << " "
+			<< varray.at(i + 2) + 1 << "//" << narray.at(i + 2) + 1 << " "
+			<< "\n";
+	}
+	out.flush();
+	data.close();
 }
 
+
+void Mesh::Rotate(const Matrix3& m)
+{
+	for (int i = 0; i < vertices.size(); i++)
+		vertices[i] = m * vertices[i];
+	for (int i = 0; i < normals.size(); i++)
+		normals[i] = m * normals[i];
+}
+
+void Mesh::Scale(const Matrix3& m)
+{
+	for (int i = 0; i < vertices.size(); i++)
+		vertices[i] = m * vertices[i];
+}

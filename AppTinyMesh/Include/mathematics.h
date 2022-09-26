@@ -16,6 +16,11 @@ public:
 
   static constexpr double DegreeToRadian(double);
   static constexpr double RadianToDegree(double);
+
+public:
+	static const double Pi;
+	static const double TwoPi;
+	static const double HalfPi;
 };
 
 /*!

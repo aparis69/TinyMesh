@@ -3,6 +3,11 @@
 // Self include
 #include "mathematics.h"
 
+const double Math::Pi = 3.14159265358979323846;
+const double Math::TwoPi = 6.28318530717958647693;
+const double Math::HalfPi = Math::Pi / 2.0;
+
+
 #include <iostream>
 
 /*!

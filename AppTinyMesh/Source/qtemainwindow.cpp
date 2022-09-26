@@ -62,19 +62,18 @@ void MainWindow::BoxMeshExample()
 
 void MainWindow::SphereImplicitExample()
 {
-  AnalyticScalarField implicit;
+	AnalyticScalarField implicit;
 
-  Mesh implicitMesh;
-  implicit.Polygonize(31, implicitMesh, Box(2.0));
+	Mesh implicitMesh = Mesh(Sphere(Vector::Null, 1.0), 16);
+	//implicitMesh.Scale(Matrix3::Scaling(Vector(1.0, 1.0, 2.0)));
 
-  std::vector<Color> cols;
-  cols.resize(implicitMesh.Vertexes());
-  for (int i = 0; i < cols.size(); i++)
-    cols[i] = Color(0.8, 0.8, 0.8);
+	std::vector<Color> cols;
+	cols.resize(implicitMesh.Vertexes());
+	for (int i = 0; i < cols.size(); i++)
+	  cols[i] = Color(0.8, 0.8, 0.8);
 
-  meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
-  UpdateGeometry();
-
+	meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
+	UpdateGeometry();
 }
 
 void MainWindow::UpdateGeometry()
