@@ -40,6 +40,192 @@ Mesh::Mesh(const std::vector<Vector>& vertices, const std::vector<Vector>& norma
 }
 
 /*!
+\brief Creates an axis aligned box.
+
+The object has 8 vertices, 6 normals and 12 triangles.
+\param box The box.
+*/
+Mesh::Mesh(const Box& box)
+{
+	// Vertices
+	vertices.resize(8);
+
+	for (int i = 0; i < 8; i++)
+	{
+		vertices[i] = box.Vertex(i);
+	}
+
+	// Normals
+	normals.push_back(Vector(-1, 0, 0));
+	normals.push_back(Vector(1, 0, 0));
+	normals.push_back(Vector(0, -1, 0));
+	normals.push_back(Vector(0, 1, 0));
+	normals.push_back(Vector(0, 0, -1));
+	normals.push_back(Vector(0, 0, 1));
+
+	// Reserve space for the triangle array
+	varray.reserve(12 * 3);
+	narray.reserve(12 * 3);
+
+	AddTriangle(0, 2, 1, 4);
+	AddTriangle(1, 2, 3, 4);
+
+	AddTriangle(4, 5, 6, 5);
+	AddTriangle(5, 7, 6, 5);
+
+	AddTriangle(0, 4, 2, 0);
+	AddTriangle(4, 6, 2, 0);
+
+	AddTriangle(1, 3, 5, 1);
+	AddTriangle(3, 7, 5, 1);
+
+	AddTriangle(0, 1, 5, 2);
+	AddTriangle(0, 5, 4, 2);
+
+	AddTriangle(3, 2, 7, 3);
+	AddTriangle(6, 7, 2, 3);
+}
+
+/*!
+\brief
+*/
+Mesh::Mesh(const Sphere& sphere, int n)
+{
+	const Vector c = sphere.Center();
+	const double r = sphere.Radius();
+	const int stackCount = n;
+	const int sectorCount = 2 * n;
+
+	const double sectorStep = 2.0 * Math::Pi / sectorCount;
+	const double stackStep = Math::Pi / stackCount;
+
+	for (int i = 0; i <= stackCount; i++)
+	{
+		double stackAngle = Math::Pi / 2 - i * stackStep;		// starting from pi/2 to -pi/2
+		for (int j = 0; j <= sectorCount; ++j)
+		{
+			double sectorAngle = j * sectorStep;				// starting from 0 to 2pi
+
+			double x = r * cos(stackAngle) * cos(sectorAngle);	// r * cos(u) * cos(v)
+			double y = r * cos(stackAngle) * sin(sectorAngle);	// r * cos(u) * sin(v)
+			double z = r * sin(stackAngle);						// r * sin(u)
+			vertices.push_back(Vector(x, y, z));
+
+			normals.push_back(Normalized(vertices.back() - c));
+		}
+	}
+
+	for (int i = 0; i < stackCount; i++)
+	{
+		int k1 = i * (sectorCount + 1);     // beginning of current stack
+		int k2 = k1 + sectorCount + 1;      // beginning of next stack
+		for (int j = 0; j < sectorCount; j++, k1++, k2++)
+		{
+			// 2 triangles per sector excluding first and last stacks
+			// k1 => k2 => k1+1
+			if (i != 0)
+				AddSmoothTriangle(k1, k1, k2, k2, k1 + 1, k1 + 1);
+
+			// k1+1 => k2 => k2+1
+			if (i != (stackCount - 1))
+				AddSmoothTriangle(k1 + 1, k1 + 1, k2, k2, k2 + 1, k2 + 1);
+		}
+	}
+}
+
+/*!
+\brief
+*/
+Mesh::Mesh(const Disc& d, int n)
+{
+	const Vector c = d.Center();
+	const double r = d.Radius();
+
+	// Orthonormal basis
+	const Vector z = Normalized(d.Normal());
+	Vector x, y;
+	z.Orthonormal(x, y);
+
+	// Vertices
+	const double dtPhi = Math::TwoPi / n;
+	vertices.reserve(n + 1); // +1 for the center
+	for (int i = 0; i < n; i++)
+	{
+		const double phi = i * dtPhi;
+		const Vector v = x * cos(phi) + y * sin(phi);
+		vertices.push_back(c + r * v);
+	}
+	vertices.push_back(c);
+
+	// Single normal
+	normals.push_back(z);
+
+	// Triangles
+	for (int i = 0; i < n; i++)
+		AddTriangle(n, i, (i + 1) % n, 0);
+}
+
+/*!
+\brief
+*/
+Mesh::Mesh(const Cylinder& c, int n)
+{
+	const Vector a = c.Vertex(0);
+	const Vector b = c.Vertex(1);
+	const double r = c.Radius();
+
+	// Orthonormal basis
+	const Vector z = Normalized(b - a);
+	Vector x, y;
+	z.Orthonormal(x, y);
+
+	vertices.reserve((n * 2) + 2); // +2 for the cap centers
+
+	// First cap
+	const double dtPhi = Math::TwoPi / n;
+	for (int i = 0; i < n; i++)
+	{
+		const double phi = i * dtPhi;
+		const Vector v = x * cos(phi) + y * sin(phi);
+		vertices.push_back(a + r * v);
+	}
+	vertices.push_back(a);
+	normals.push_back(-z);
+	for (int i = 0; i < n; i++)
+		AddTriangle(n, i, (i + 1) % n, 0);
+
+	// Second cap
+	const int offset = int(vertices.size());
+	for (int i = 0; i < n; i++)
+	{
+		const double phi = i * dtPhi;
+		const Vector v = x * cos(phi) + y * sin(phi);
+		vertices.push_back(b + r * v);
+	}
+	vertices.push_back(b);
+	normals.push_back(z);
+	for (int i = 0; i < n; i++)
+		AddTriangle(offset + n, offset + i, offset + ((i + 1) % n), 0);
+
+	// Interior triangles (with normals)
+	for (int i = 0; i < n; i++)
+	{
+		const Vector nn = Normalized(a - vertices[i]);
+		normals.push_back(nn);
+
+		AddTriangle(i, offset + i, (i + 1) % n, int(normals.size()) - 1);
+		AddTriangle((i + 1) % n, offset + i, offset + ((i + 1) % n), int(normals.size()) - 1);
+	}
+}
+
+/*!
+\brief Empty
+*/
+Mesh::~Mesh()
+{
+}
+
+/*!
 \brief Reserve memory for arrays.
 \param nv,nn,nvi,nvn Number of vertices, normals, vertex indexes and vertex normals.
 */
@@ -49,13 +235,6 @@ void Mesh::Reserve(int nv, int nn, int nvi, int nvn)
 	normals.reserve(nn);
 	varray.reserve(nvi);
 	narray.reserve(nvn);
-}
-
-/*!
-\brief Empty
-*/
-Mesh::~Mesh()
-{
 }
 
 /*!
@@ -157,100 +336,6 @@ Box Mesh::GetBox() const
 }
 
 /*!
-\brief Creates an axis aligned box.
-
-The object has 8 vertices, 6 normals and 12 triangles.
-\param box The box.
-*/
-Mesh::Mesh(const Box& box)
-{
-	// Vertices
-	vertices.resize(8);
-
-	for (int i = 0; i < 8; i++)
-	{
-		vertices[i] = box.Vertex(i);
-	}
-
-	// Normals
-	normals.push_back(Vector(-1, 0, 0));
-	normals.push_back(Vector(1, 0, 0));
-	normals.push_back(Vector(0, -1, 0));
-	normals.push_back(Vector(0, 1, 0));
-	normals.push_back(Vector(0, 0, -1));
-	normals.push_back(Vector(0, 0, 1));
-
-	// Reserve space for the triangle array
-	varray.reserve(12 * 3);
-	narray.reserve(12 * 3);
-
-	AddTriangle(0, 2, 1, 4);
-	AddTriangle(1, 2, 3, 4);
-
-	AddTriangle(4, 5, 6, 5);
-	AddTriangle(5, 7, 6, 5);
-
-	AddTriangle(0, 4, 2, 0);
-	AddTriangle(4, 6, 2, 0);
-
-	AddTriangle(1, 3, 5, 1);
-	AddTriangle(3, 7, 5, 1);
-
-	AddTriangle(0, 1, 5, 2);
-	AddTriangle(0, 5, 4, 2);
-
-	AddTriangle(3, 2, 7, 3);
-	AddTriangle(6, 7, 2, 3);
-}
-
-/*!
-\brief
-*/
-Mesh::Mesh(const Sphere& sphere, int n)
-{
-	const Vector c = sphere.Center();
-	const double r = sphere.Radius();
-	const int stackCount = n;
-	const int sectorCount = 2 * n;
-
-	const double sectorStep = 2.0 * Math::Pi / sectorCount;
-	const double stackStep = Math::Pi / stackCount;
-
-	for (int i = 0; i <= stackCount; i++)
-	{
-		double stackAngle = Math::Pi / 2 - i * stackStep;		// starting from pi/2 to -pi/2
-		for (int j = 0; j <= sectorCount; ++j)
-		{
-			double sectorAngle = j * sectorStep;				// starting from 0 to 2pi
-
-			double x = r * cos(stackAngle) * cos(sectorAngle);	// r * cos(u) * cos(v)
-			double y = r * cos(stackAngle) * sin(sectorAngle);	// r * cos(u) * sin(v)
-			double z = r * sin(stackAngle);						// r * sin(u)
-			vertices.push_back(Vector(x, y, z));
-
-			normals.push_back(Normalized(vertices.back() - c));
-		}
-	}
-
-	for (int i = 0; i < stackCount; i++)
-	{
-		int k1 = i * (sectorCount + 1);     // beginning of current stack
-		int k2 = k1 + sectorCount + 1;      // beginning of next stack
-		for (int j = 0; j < sectorCount; j++, k1++, k2++)
-		{
-			// 2 triangles per sector excluding first and last stacks
-			// k1 => k2 => k1+1
-			if (i != 0)
-				AddSmoothTriangle(k1, k1, k2, k2, k1 + 1, k1 + 1);
-
-			// k1+1 => k2 => k2+1
-			if (i != (stackCount - 1))
-				AddSmoothTriangle(k1 + 1, k1 + 1, k2, k2, k2 + 1, k2 + 1);
-		}
-	}
-}
-
-/*!
 \brief Scale the mesh.
 \param s Scaling factor.
 */
@@ -272,6 +357,25 @@ void Mesh::Scale(double s)
 	}
 }
 
+/*!
+\brief
+*/
+void Mesh::Scale(const Matrix3& m)
+{
+	for (int i = 0; i < vertices.size(); i++)
+		vertices[i] = m * vertices[i];
+}
+
+/*!
+\brief
+*/
+void Mesh::Rotate(const Matrix3& m)
+{
+	for (int i = 0; i < vertices.size(); i++)
+		vertices[i] = m * vertices[i];
+	for (int i = 0; i < normals.size(); i++)
+		normals[i] = m * normals[i];
+}
 
 
 #include <QtCore/QFile>
@@ -352,19 +456,4 @@ void Mesh::SaveObj(const QString& url, const QString& meshName) const
 	}
 	out.flush();
 	data.close();
-}
-
-
-void Mesh::Rotate(const Matrix3& m)
-{
-	for (int i = 0; i < vertices.size(); i++)
-		vertices[i] = m * vertices[i];
-	for (int i = 0; i < normals.size(); i++)
-		normals[i] = m * normals[i];
-}
-
-void Mesh::Scale(const Matrix3& m)
-{
-	for (int i = 0; i < vertices.size(); i++)
-		vertices[i] = m * vertices[i];
 }

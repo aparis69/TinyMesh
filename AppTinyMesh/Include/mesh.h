@@ -3,6 +3,8 @@
 #include "box.h"
 #include "sphere.h"
 #include "ray.h"
+#include "disc.h"
+#include "cylinder.h"
 #include "mathematics.h"
 #include "matrix.h"
 
@@ -96,6 +98,8 @@ public:
   explicit Mesh(const std::vector<Vector>&, const std::vector<Vector>&, const std::vector<int>&, const std::vector<int>&);
   explicit Mesh(const Box&);
   explicit Mesh(const Sphere&, int n);
+  explicit Mesh(const Disc& d, int n);
+  explicit Mesh(const Cylinder& c, int n);
   ~Mesh();
 
   void Reserve(int, int, int, int);

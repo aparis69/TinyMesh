@@ -160,6 +160,8 @@
     <ClInclude Include="Include\box.h" />
     <ClInclude Include="Include\camera.h" />
     <ClInclude Include="Include\color.h" />
+    <ClInclude Include="Include\cylinder.h" />
+    <ClInclude Include="Include\disc.h" />
     <ClInclude Include="Include\implicits.h" />
     <ClInclude Include="Include\mathematics.h" />
     <ClInclude Include="Include\matrix.h" />
