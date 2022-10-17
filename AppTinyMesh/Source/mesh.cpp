@@ -219,6 +219,49 @@ Mesh::Mesh(const Cylinder& c, int n)
 }
 
 /*!
+\brief
+*/
+Mesh::Mesh(const Torus& torus, int n, int slice)
+{
+	const Vector c = torus.Center();
+	const double r = torus.Radius();
+	const double r1 = torus.InnerRadius();
+
+	// Orthonormal basis
+	const Vector z = Normalized(torus.Normal());
+	Vector x, y;
+	z.Orthonormal(x, y);
+
+	// Vertices
+	const double dtPhi = Math::TwoPi / double(slice);
+	const double dtTheta = Math::TwoPi / double(n);
+	for (int i = 0; i < slice; i++)
+	{
+		const double theta = i * dtPhi;
+		for (int j = 0; j < n; j++)
+		{
+			const double phi = j * dtTheta;
+			
+			const Vector u = cos(theta) * x + sin(theta) * y;
+			const Vector v = cos(phi) * u + sin(phi) * z;
+
+			vertices.push_back(c + r * u + r1 * v);
+			normals.push_back(v);
+		}
+	}
+
+	const int size = slice;
+	const int p = n;
+
+	// Triangles
+	for (int j = 0; j < slice; j++)
+	{
+		for (int i = 0; i < p; i++)
+			AddSmoothQuadrangle(j * p + i, j * p + i, ((j + 1) % n) * p + i, ((j + 1) % n) * p + i, ((j + 1) % n) * p + (i + 1) % p, ((j + 1) % n) * p + (i + 1) % p, j * p + (i + 1) % p, j * p + (i + 1) % p);
+	}
+}
+
+/*!
 \brief Empty
 */
 Mesh::~Mesh()
@@ -375,6 +418,20 @@ void Mesh::Rotate(const Matrix3& m)
 		vertices[i] = m * vertices[i];
 	for (int i = 0; i < normals.size(); i++)
 		normals[i] = m * normals[i];
+}
+
+
+void Mesh::SphereWarp(const Vector& c, double r, const Vector& d)
+{
+	for (int i = 0; i < vertices.size(); i++)
+	{
+		const double dd = Norm(vertices[i] - c);
+		double t = dd / r;
+		t = Math::Clamp(t);
+		vertices[i] += d * t;
+	}
+
+	SmoothNormals();
 }
 
 

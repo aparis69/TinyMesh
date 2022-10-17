@@ -5,6 +5,7 @@
 #include "ray.h"
 #include "disc.h"
 #include "cylinder.h"
+#include "torus.h"
 #include "mathematics.h"
 #include "matrix.h"
 
@@ -100,6 +101,7 @@ public:
   explicit Mesh(const Sphere&, int n);
   explicit Mesh(const Disc& d, int n);
   explicit Mesh(const Cylinder& c, int n);
+  explicit Mesh(const Torus& torus, int n, int slice);
   ~Mesh();
 
   void Reserve(int, int, int, int);
@@ -109,21 +111,24 @@ public:
   Vector Normal(int) const;
   int Triangles() const;
   int Vertexes() const;
-
   std::vector<int> VertexIndexes() const;
   std::vector<int> NormalIndexes() const;
   int VertexIndex(int, int) const;
   int NormalIndex(int, int) const;
   Vector operator[](int) const;
   Box GetBox() const;
-  void Scale(double);
   void SmoothNormals();
 
   void Load(const QString&);
   void SaveObj(const QString&, const QString&) const;
 
+  // Affine transformations
   void Rotate(const Matrix3& m);
   void Scale(const Matrix3& m);
+  void Scale(double);
+
+  // Deformation
+  void SphereWarp(const Vector& c, double r, const Vector& d);
 
 protected:
   void AddTriangle(int, int, int, int);

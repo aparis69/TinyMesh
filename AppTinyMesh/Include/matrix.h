@@ -26,7 +26,6 @@ public:
 	static Matrix3 RotationY(double theta);
 	static Matrix3 RotationZ(double theta);
 	static Matrix3 Rotation(const Vector& angle);
-
 	static Matrix3 Scaling(const Vector& scaleFactor);
 
 public:

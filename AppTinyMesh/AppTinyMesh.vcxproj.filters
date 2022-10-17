@@ -119,6 +119,9 @@
     <ClInclude Include="Include\cylinder.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="Include\torus.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\mesh.glsl">

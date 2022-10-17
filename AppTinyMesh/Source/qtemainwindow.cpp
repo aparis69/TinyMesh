@@ -64,17 +64,20 @@ void MainWindow::SphereImplicitExample()
 {
 	AnalyticScalarField implicit;
 
-	Mesh implicitMesh = Mesh(Cylinder(Vector(0), Vector(2, 2, 1), 1.0), 16);
-	//Mesh implicitMesh = Mesh(Disc(Vector::Null, Normalized(Vector(1, 0.2, 0.5)), 2.0), 32);
-	//Mesh implicitMesh = Mesh(Sphere(Vector::Null, 1.0), 16);
-	//implicitMesh.Scale(Matrix3::Scaling(Vector(1.0, 1.0, 2.0)));
+	//Mesh mesh = Mesh(Torus(Vector::Null, Normalized(Vector(1, 0.2, 0.5)), 2.0, 0.5), 16, 16);
+	//Mesh mesh = Mesh(Cylinder(Vector(0), Vector(2, 2, 1), 1.0), 16);
+	//Mesh mesh = Mesh(Disc(Vector::Null, Normalized(Vector(1, 0.2, 0.5)), 2.0), 32);
+	Mesh mesh = Mesh(Sphere(Vector::Null, 1.0), 16);
+	//mesh.Scale(Matrix3::Scaling(Vector(1.0, 1.0, 2.0)));
+
+	//mesh.SphereWarp(Vector(1, 0, 0), 0.5, -Normalized(Vector(1, 0, 1)));
 
 	std::vector<Color> cols;
-	cols.resize(implicitMesh.Vertexes());
+	cols.resize(mesh.Vertexes());
 	for (int i = 0; i < cols.size(); i++)
 	  cols[i] = Color(0.8, 0.8, 0.8);
 
-	meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
+	meshColor = MeshColor(mesh, cols, mesh.VertexIndexes());
 	UpdateGeometry();
 }
 
