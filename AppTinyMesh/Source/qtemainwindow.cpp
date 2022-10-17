@@ -71,6 +71,7 @@ void MainWindow::SphereImplicitExample()
 	//mesh.Scale(Matrix3::Scaling(Vector(1.0, 1.0, 2.0)));
 
 	//mesh.SphereWarp(Vector(1, 0, 0), 0.5, -Normalized(Vector(1, 0, 1)));
+	mesh.Scale(Matrix3::Scaling(Vector(1, 2, 3)));
 
 	std::vector<Color> cols;
 	cols.resize(mesh.Vertexes());

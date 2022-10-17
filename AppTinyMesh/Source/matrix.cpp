@@ -1,4 +1,5 @@
 #include "matrix.h"
+#include <assert.h>
 
 Matrix3 Matrix3::Identity = Matrix3(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
 
@@ -59,9 +60,28 @@ Matrix3 Matrix3::Transpose() const
 {
 	return Matrix3(
 		r[0], r[3], r[6],
-		r[0], r[3], r[6],
-		r[0], r[3], r[6]
+		r[1], r[4], r[7],
+		r[2], r[5], r[8]
 	);
+}
+
+/*!
+\brief This function assumes the matrix is diagonal.
+*/
+Matrix3 Matrix3::Inverse() const
+{
+	for (int i = 0; i < 9; i++)
+	{
+		if (i == 0 || i == 4 || i == 8)
+			continue;
+		assert(r[i] == 0.0);
+	}
+	
+	Matrix3 ret = *this;
+	ret[0] = 1.0 / ret[0];
+	ret[4] = 1.0 / ret[4];
+	ret[8] = 1.0 / ret[8];
+	return ret;
 }
 
 Matrix3 operator+ (const Matrix3& u, const Matrix3& v)

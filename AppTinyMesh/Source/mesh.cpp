@@ -405,8 +405,12 @@ void Mesh::Scale(double s)
 */
 void Mesh::Scale(const Matrix3& m)
 {
+	const Matrix3 m_inv_t = m.Inverse().Transpose();
 	for (int i = 0; i < vertices.size(); i++)
+	{
 		vertices[i] = m * vertices[i];
+		normals[i] = Normalized(m_inv_t * normals[i]);
+	}
 }
 
 /*!

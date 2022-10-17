@@ -20,6 +20,7 @@ public:
 	friend Matrix3 operator* (const Matrix3&, const Matrix3&);
 	Vector operator*(const Vector& v) const;
 	Matrix3 Transpose() const;
+	Matrix3 Inverse() const;
 
 public:
 	static Matrix3 RotationX(double theta);
